@@ -12,34 +12,42 @@ module.exports = {
       code: 'UNAUTHENTICATED',
     },
   }),
-  authMiddleware: function (req, res, next) {
+  authMiddleware: function ({req, res, next}) {
+    console.log("whatever");
+    console.log(".token", req?.body?.token);
+    console.log(".token", req?.query?.token);
+    console.log(".token", req?.headers?.authorization);
     // allows token to be sent via  req.query or headers
-    let token = req.query.token || req.headers.authorization;
-
+    let token = req?.query?.token || req?.headers?.authorization || req?.body?.token;
+    console.log("sad token", token)
     // ["Bearer", "<tokenvalue>"]
-    if (req.headers.authorization) {
+    if (req?.headers?.authorization) {
+      console.log("token before split")
       token = token.split(' ').pop().trim();
+      
     }
-
+    console.log("big tokes", token)
     if (!token) {
-      return res.status(400).json({ message: 'You have no token!' });
+      return req;
     }
 
-    // verify token and get user data out of it
+    // if token can be verified, add the decoded user's data to the request so it can be accessed in the resolver
     try {
       const { data } = jwt.verify(token, secret, { maxAge: expiration });
+      console.log(data);
       req.user = data;
     } catch {
       console.log('Invalid token');
-      return res.status(400).json({ message: 'invalid token!' });
     }
 
+    // return the request object so it can be passed to the resolver as `context`
+    return req;
+
     // send to next endpoint
-    next();
   },
   signToken: function ({ username, email, _id }) {
     const payload = { username, email, _id };
-
+    console.log("token?", payload);
     return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
   },
 };
