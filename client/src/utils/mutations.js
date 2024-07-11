@@ -37,11 +37,14 @@ export const LOGIN_USER = gql`
 `;
 
 export const REMOVE_BOOK = gql`
-  mutation removeBook($book: [Book]!) {
-    removeBook(book: $book) {
+mutation removeBook($bookId: String!) {
+  removeBook(bookId: $bookId) {
+    _id
+    username
+    savedBooks {
       _id
-      username
-      savedBooks
+      bookId
     }
   }
+}
 `;
