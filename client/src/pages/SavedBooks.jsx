@@ -14,7 +14,11 @@ import { removeBookId } from '../utils/localStorage';
 
 const SavedBooks = () => {
   const [deleteBook, {error}] = useMutation(REMOVE_BOOK)
-  const userData = useQuery(GET_ME)
+  const { loading, data } = useQuery(GET_ME);
+  if (loading == true) {
+    return <div>Loading...</div>}
+    const userData = data.me;
+
 
   // create function that accepts the book's mongo _id value as param and deletes the book from the database
   const handleDeleteBook = async (bookId) => {
@@ -26,7 +30,7 @@ const SavedBooks = () => {
     try {
       const response = await deleteBook(bookId, token);
 
-      if (!response.ok) {
+      if (!response) {
         throw new Error('something went wrong!');
       }
 
@@ -38,7 +42,6 @@ const SavedBooks = () => {
       console.error(err);
     }
   };
-
 
   return (
     <>
@@ -56,8 +59,8 @@ const SavedBooks = () => {
         <Row>
           {userData.savedBooks.map((book) => {
             return (
-              <Col md="4">
-                <Card key={book.bookId} border='dark'>
+              <Col key={book.bookId} md="4">
+                <Card border='dark'>
                   {book.image ? <Card.Img src={book.image} alt={`The cover for ${book.title}`} variant='top' /> : null}
                   <Card.Body>
                     <Card.Title>{book.title}</Card.Title>
@@ -75,6 +78,6 @@ const SavedBooks = () => {
       </Container>
     </>
   );
-};
+ };
 
 export default SavedBooks;

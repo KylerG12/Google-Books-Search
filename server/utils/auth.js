@@ -13,20 +13,14 @@ module.exports = {
     },
   }),
   authMiddleware: function ({req, res, next}) {
-    console.log("whatever");
-    console.log(".token", req?.body?.token);
-    console.log(".token", req?.query?.token);
-    console.log(".token", req?.headers?.authorization);
     // allows token to be sent via  req.query or headers
     let token = req?.query?.token || req?.headers?.authorization || req?.body?.token;
-    console.log("sad token", token)
     // ["Bearer", "<tokenvalue>"]
     if (req?.headers?.authorization) {
       console.log("token before split")
       token = token.split(' ').pop().trim();
       
     }
-    console.log("big tokes", token)
     if (!token) {
       return req;
     }
